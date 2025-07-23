@@ -115,7 +115,7 @@ namespace DocManagementWebApi.Controllers
             return null;
         }
 
-        [HttpGet("files")]
+        [HttpGet("files/{filename}")]
         public async Task<IActionResult> PdfToBase64(string filename)
         {
             if (filename == null || filename.Length == 0)
@@ -133,17 +133,9 @@ namespace DocManagementWebApi.Controllers
                 var projectPath = Directory.GetCurrentDirectory();
                 var pdfFullPath = Path.Combine(projectPath, "files", pdf.PdfPath);
 
-                var pdfFile = System.IO.File.Open(pdfFullPath, FileMode.Open);
-                byte[] pdfBytes;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await pdfFile.CopyToAsync(memoryStream);
-                    pdfBytes = memoryStream.ToArray();
-                }
-
-                string base64String = Convert.ToBase64String(pdfBytes);
-
-                return Ok(base64String);
+                // Read file directly as bytes (no open lock)
+                byte[] pdfBytes = await System.IO.File.ReadAllBytesAsync(pdfFullPath);
+                return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
             {
