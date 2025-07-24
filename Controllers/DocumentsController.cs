@@ -89,7 +89,7 @@ namespace DocManagementWebApi.Controllers
         }
 
         [HttpGet("api/documents")]
-        public async Task<List<DocumentModel>> Search(string value)
+        public async Task<List<DocumentModel>> Search([FromQuery] string value)
         {
             IQueryable<DocumentModel> query = _context.DocumentData;
             if (!string.IsNullOrEmpty(value))
@@ -105,15 +105,15 @@ namespace DocManagementWebApi.Controllers
             return await _context.DocumentData.ToListAsync();
         }
 
-        [HttpGet("api/documents/{id}")]
-        public async Task<DocumentModel?> GetDocument(Guid id)
-        {
-            var result = await _context.DocumentData.FindAsync(id);
-            if (result != null)
-                return result;
+        //[HttpGet("api/documents/{id}")]
+        //public async Task<DocumentModel?> GetDocument(Guid id)
+        //{
+        //    var result = await _context.DocumentData.FindAsync(id);
+        //    if (result != null)
+        //        return result;
 
-            return null;
-        }
+        //    return null;
+        //}
 
         [HttpGet("files/{filename}")]
         public async Task<IActionResult> PdfToBase64(string filename)
